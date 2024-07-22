@@ -25,7 +25,7 @@ SMILE Controller
 #### 3 GraphDB Configuration
 A few notes on configurting SMILE to connect to the database.
 - The main SMILE Flask application can be configured in the [src/config/local_config.yml](src/config/local_config.yml) file.
-- The config must match ththe knowledge source config.yml file. See the following for testing: [src/config/local_config_test.yml](src/config/local_config_test.yml).
+- The config must match the knowledge source config.yml file. See the following for testing: [src/config/local_config_test.yml](src/config/local_config_test.yml).
 
 #### 4 Setup smile-controller conda environment
 `conda env create -f PySMILEController.yml`
@@ -36,4 +36,4 @@ A few notes on configurting SMILE to connect to the database.
 1. `python -i -m main`
 1. To view the results, run `show_trace(trace_id)`, where trace_id is the id of the last trace.
 
-Results can be seen in the `<logs>/<trace_id>.txt file`, where `<logs>/` is a folder st up i 
+Results can be seen in the `<logs>/<trace_id>.txt file`, where `<logs>/` is a folder set up in [src/config/local_config.yml](src/config/local_config.yml)
