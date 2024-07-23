@@ -33,7 +33,7 @@ A few notes on configurting SMILE to connect to the database.
 ## To run example
 1. You will need to start knowledge source listeners.
 1. `cd src`
-1. `python -i -m main`
+1. `python -i -m smile_controller.main`
 1. To view the results, run `show_trace(trace_id)`, where trace_id is the id of the last trace.
 
 Results can be seen in the `<logs>/<trace_id>.txt file`, where `<logs>/` is a folder set up in [src/config/local_config.yml](src/config/local_config.yml)
