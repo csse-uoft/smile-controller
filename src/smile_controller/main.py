@@ -4,7 +4,6 @@ import re, os, tqdm, pandas as pd
 # from smile_controller.listener import ParseQuery, Query, Text, Trace, Ks, KSAR, Hypothesis, Text, Ks, KSAR, Phrase, Sentence
 
 from smile_controller.listener import Query, Text, Trace, Ks, KSAR, Hypothesis, Text, Ks, KSAR, Sentence, Outcome, Program, Service, BeneficialStakeholder, Organization, Phrase
-
 from py2graphdb.config import config as CONFIG
 from py2graphdb.Models.graph_node import GraphNode, SPARQLDict
 from py2graphdb.utils.db_utils import resolve_nm_for_dict, PropertyList, _resolve_nm
@@ -318,7 +317,6 @@ def main_top_local_bfs_init():
             main_top_global_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
             top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
 
-
-if __file__ == '__main__':
+if __name__ == '__main__':
     main_top_local_bfs_init()
     
