@@ -56,7 +56,7 @@ def show_trace(trace_id):
             except:
                 pass    
     def save_phrases(nodes):
-        df = pd.DataFrame()
+        df = pd.DataFrame(columns=['trace', 'klass', 'id', 'certainty', 'phrase_id', 'content','phrase_certainty'])
         ranked_nodes = sorted(nodes, key=lambda x: round(x.certainty, 3), reverse=True)
 
         for out in ranked_nodes:
@@ -65,7 +65,8 @@ def show_trace(trace_id):
                 df = pd.concat([df, pd.DataFrame([[out.trace, out.klass, out.id, round(out.certainty, 3), phrase.id, phrase.content, round(phrase.certainty, 3)]])])
             except:
                 pass    
-        df.columns = columns=['trace', 'klass', 'id', 'certainty', 'phrase_id', 'content','phrase_certainty']
+            if df.empty:
+                df = pd.DataFrame(columns=['trace', 'klass', 'id', 'certainty', 'phrase_id', 'content','phrase_certainty'])
         return df
 
     trace = Trace(trace_id)
