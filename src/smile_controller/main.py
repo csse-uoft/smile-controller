@@ -56,13 +56,14 @@ def show_trace(trace_id):
             except:
                 pass    
     def save_phrases(nodes):
+        columns = ['trace', 'klass', 'id', 'certainty', 'phrase_id', 'content','phrase_certainty']
         df = pd.DataFrame(columns=['trace', 'klass', 'id', 'certainty', 'phrase_id', 'content','phrase_certainty'])
         ranked_nodes = sorted(nodes, key=lambda x: round(x.certainty, 3), reverse=True)
 
         for out in ranked_nodes:
             try:
                 phrase = Phrase(out.phrase)
-                df = pd.concat([df, pd.DataFrame([[out.trace, out.klass, out.id, round(out.certainty, 3), phrase.id, phrase.content, round(phrase.certainty, 3)]])])
+                df = pd.concat([df, pd.DataFrame([[out.trace, out.klass, out.id, round(out.certainty, 3), phrase.id, phrase.content, round(phrase.certainty, 3)]],columns=columns)])
             except:
                 pass    
             if df.empty:
@@ -186,23 +187,24 @@ def main_top_global_bfs(top_hypothesis, trigger_event):
                         trigger_event = "Found new global highest hypothesis."
             print("\tcheck1:",  type(prev_hypothesis), type(top_hypothesis), type(new_top_hypothesis), type(top_hypothesis), type(prev_top_certainty))
             print("\tcheck2:",  prev_hypothesis, top_hypothesis, new_top_hypothesis, top_hypothesis, prev_top_certainty)
-            print("\tcheck3:",  prev_hypothesis.id, top_hypothesis.id, new_top_hypothesis.id, round(top_hypothesis.certainty, 3), prev_top_certainty)
-            if top_hypothesis.id == new_top_hypothesis.id and round(top_hypothesis.certainty,3) == prev_top_certainty:
-                # no global improvements
-                trigger_event = "No new local improvements on top hypothesis"
-                print("\t>>te2", trigger_event)
-                break
-            elif top_hypothesis.id == new_top_hypothesis.id and round(top_hypothesis.certainty,3) != prev_top_certainty:
-                trigger_event = "Top local hypothesis certainty updated"
-            elif prev_hypothesis is not None and prev_hypothesis.id != new_top_hypothesis.id:
-                trigger_event = "New top local hypothesis found 1"
-            elif top_hypothesis.id != new_top_hypothesis.id:
-                trigger_event = "New top local hypothesis found 2"
-            print("\tEND te", trigger_event)
-            top_hypothesis = new_top_hypothesis
-            prev_top_certainty = round(top_hypothesis.certainty, 3)
-            prev_hypothesis = top_hypothesis
-            new_top_hypothesis = top_hypothesis
+            #print("\tcheck3:",  prev_hypothesis.id, top_hypothesis.id, new_top_hypothesis.id, round(top_hypothesis.certainty, 3), prev_top_certainty)
+            if new_top_hypothesis is not None:
+                if top_hypothesis.id == new_top_hypothesis.id and round(top_hypothesis.certainty,3) == prev_top_certainty:
+                    # no global improvements
+                    trigger_event = "No new local improvements on top hypothesis"
+                    print("\t>>te2", trigger_event)
+                    break
+                elif top_hypothesis.id == new_top_hypothesis.id and round(top_hypothesis.certainty,3) != prev_top_certainty:
+                    trigger_event = "Top local hypothesis certainty updated"
+                elif prev_hypothesis is not None and prev_hypothesis.id != new_top_hypothesis.id:
+                    trigger_event = "New top local hypothesis found 1"
+                elif top_hypothesis.id != new_top_hypothesis.id:
+                    trigger_event = "New top local hypothesis found 2"
+                print("\tEND te", trigger_event)
+                top_hypothesis = new_top_hypothesis
+                prev_top_certainty = round(top_hypothesis.certainty, 3)
+                prev_hypothesis = top_hypothesis
+                new_top_hypothesis = top_hypothesis
 
 
 def main_top_global_bfs_init():
