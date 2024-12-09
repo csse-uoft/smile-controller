@@ -347,10 +347,14 @@ def main_top_local_init():
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     main_top_global_bfs_init()
     # pass
     # main_top_local_bfs_init()
     # main_top_local_init()
     # trace = dfs()
     # show_trace(trace.inst_id)
+=======
+    main_top_local_bfs_init()
+>>>>>>> 552c7b87f4c9905421194eb16e5f0bdc7e8c8a15
     
