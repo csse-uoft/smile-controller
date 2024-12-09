@@ -31,6 +31,7 @@ class Task:
         self.local = local
         self.inputs = inputs
         self.outputs = []
+
     def run(self):
         if self.ks_ar is not None:
             self.ks_ar.ks_status = 0
@@ -61,6 +62,7 @@ class Schedule:
         self.tasks = []
         self.outputs = []
         self.subschedules = []
+        self.cycle = 0
 
     def incr_cycle(self):
         ksars = KSAR.search(props={smile.hasTraceID:self.trace.id}, how='all')
@@ -267,31 +269,31 @@ class Schedule:
         r2 = self.subschedule_process(hypothesis=hypothesis, trigger_event=trigger_event, search=search, process_type=None)
         return r1 + r2
     def subschedule_improve(self, hypothesis, trigger_event, search, process_type='improve', ):
-        # print('\t\t5.1')
+        print('\t\t5.1')
         schedule0 = self
         # improve hypothesis
         schedule1 = Schedule(trace=schedule0.trace, inputs=[hypothesis])
-        # print('\t\t5.2')
+        print('\t\t5.2')
         self.subschedules.append(schedule1)
-        # print('\t\t5.3')
+        print('\t\t5.3')
         schedule1.cycle = schedule0.cycle + 1
-        # print('\t\t5.4')
+        print('\t\t5.4')
         kss_to_add = schedule1.get_kss_for_hypo_improvement(hypothesis=hypothesis)
-        # print('\t\t5.5')
+        print('\t\t5.5')
         schedule1.processes_kss(kss=kss_to_add, search=search, process_type=process_type, trigger_event=f"{trigger_event}: Improve solo input")
-        # print('\t\t5.6')
+        print('\t\t5.6')
 
         # improve hypothesis with other hypotheses
         schedule2 = Schedule(trace=schedule0.trace, inputs=[hypothesis])
-        # print('\t\t5.7')
+        print('\t\t5.7')
         self.subschedules.append(schedule2)
-        # print('\t\t5.8')
+        print('\t\t5.8')
         schedule2.cycle = schedule0.cycle + 1
-        # print('\t\t5.9')
+        print('\t\t5.9')
         kss_to_add = schedule2.get_kss_for_hypo_improvement_with_other_inputs(hypothesis=hypothesis, input_types=[])
-        # print('\t\t5.10')
+        print('\t\t5.10')
         schedule2.processes_kss(kss=kss_to_add, search=search, process_type=process_type, trigger_event=f"{trigger_event}: Improve paired input")
-        # print('\t\t5.11')
+        print('\t\t5.11')
 
         return schedule1, schedule2
 
