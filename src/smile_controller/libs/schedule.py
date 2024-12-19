@@ -53,7 +53,8 @@ class Task:
             print('no ks_ar')
 
 class Schedule:
-    _last_cycle = 0
+    # _last_cycle = 0
+    cycle = 0
     _id = itert.count(0)
     def __init__(self, trace, inputs=[]) -> None:
         self.id = next(self._id)
@@ -62,15 +63,25 @@ class Schedule:
         self.tasks = []
         self.outputs = []
         self.subschedules = []
-        self.cycle = 0
+        # self.cycle = self._last_cycle + 1
 
-    def incr_cycle(self):
-        ksars = KSAR.search(props={smile.hasTraceID:self.trace.id}, how='all')
-        if len(ksars)>0:
-            last_cycle = sorted(ksars, key=lambda x: x.cycle, reverse=True)[0].cycle
-        else:
-            last_cycle = 0
-        self.cycle = last_cycle + 1
+    @classmethod
+    def init_cycle(cls):
+        # cls._last_cycle = 0
+        cls.cycle = 0
+
+    @classmethod
+    def incr_cycle(cls):
+        # cls._last_cycle + 1
+        cls.cycle += 1
+
+    # def incr_cycle(self):
+    #     ksars = KSAR.search(props={smile.hasTraceID:self.trace.id}, how='all')
+    #     if len(ksars)>0:
+    #         last_cycle = sorted(ksars, key=lambda x: x.cycle, reverse=True)[0].cycle
+    #     else:
+    #         last_cycle = 0
+    #     self.cycle = last_cycle + 1
 
     def collect_outputs(self):
         tmp_hypothesies = []
@@ -276,7 +287,7 @@ class Schedule:
         print('\t\t5.2')
         self.subschedules.append(schedule1)
         print('\t\t5.3')
-        schedule1.cycle = schedule0.cycle + 1
+        # schedule1.cycle = schedule0.cycle + 1
         print('\t\t5.4')
         kss_to_add = schedule1.get_kss_for_hypo_improvement(hypothesis=hypothesis)
         print('\t\t5.5')
@@ -288,7 +299,7 @@ class Schedule:
         print('\t\t5.7')
         self.subschedules.append(schedule2)
         print('\t\t5.8')
-        schedule2.cycle = schedule0.cycle + 1
+        # schedule2.cycle = schedule0.cycle + 1
         print('\t\t5.9')
         kss_to_add = schedule2.get_kss_for_hypo_improvement_with_other_inputs(hypothesis=hypothesis, input_types=[])
         print('\t\t5.10')
@@ -306,7 +317,7 @@ class Schedule:
         # processes hypothesis
         schedule1 = Schedule(trace=schedule0.trace, inputs=[hypothesis])
         self.subschedules.append(schedule1)
-        schedule1.cycle = schedule0.cycle + 1
+        # schedule1.cycle = schedule0.cycle + 1
         kss_to_add = schedule1.get_kss_for_hypo_processing(hypothesis=hypothesis)
         schedule1.processes_kss(kss=kss_to_add, search=search, process_type=process_type, trigger_event=f"{trigger_event}: Process solo input")
         return schedule1
@@ -316,7 +327,7 @@ class Schedule:
         schedule0 = self
         schedule2 = Schedule(trace=schedule0.trace, inputs=[hypothesis])
         self.subschedules.append(schedule2)
-        schedule2.cycle = schedule0.cycle + 1
+        # schedule2.cycle = schedule0.cycle + 1
         kss_to_add = schedule2.get_kss_for_hypo_processing_with_other_inputs(hypothesis=hypothesis, input_types=[])
         schedule2.processes_kss(kss=kss_to_add, search=search, process_type=process_type, trigger_event=f"{trigger_event}: Process paired input")
 

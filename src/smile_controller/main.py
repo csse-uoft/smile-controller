@@ -24,9 +24,10 @@ if not os.path.exists(CONFIG.LOG_DIR):
 
 
 description = "St.Mary's Church provides hot meals &amp; addiction support to 90% of homeless youth to support a brighter future."
-#description = "About Oak Trees and Acorns. A Fun and Enriched Experience. At Oak Trees and Acorns we believe in providing children with a supportive environment which emphasizes quality of life, encourages growth, and recognizes the importance of family and of generations coming together. We believe in order for children to learn, they must first feel good about themselves and feel confident in their capabilities. We strive to provide a variety of experiences that are age appropriate to a child's learning style and developmental needs. Children enrolled at our Sherbrooke (long term care home) location will become an integral part of daily life at Sherbrooke. We believe that intergenerational interaction between children and residents strengthens the whole community, helps encourage the child's self worth through an extended family concept, and improves the quality of life for all. Children enrolled at our Caroline Robins location will become an integral part of the community school environment. We believe that early exposure to the school community, its activities and resources, create more seamless transitions to Pre Kindergarten and Kindergarten education, while helping to create important social bonds within the community. Children at this location will also have the same opportunity for intergenerational interactions with Central Haven, Sherbrooke's sister site, although on a less frequent spontaneous schedule. Children enrolled in both locations will be enriched with our inclusive programming using the Play and Exploration curriculum. We are licensed through the Ministry of Education, Early Years Branch and regulated by The Child Care Act, and The Saskatchewan Child Care Regulations. www.education.gov.sk.ca/elcc. Are you ready to start your future with us?"
+# description = "St.Mary's Church provides hot meals &amp; addiction support to 90% of homeless youth to support a brighter future. We serve the Toronto community by providing the Health and Wellness Clinic, where familes and friends can meet woth a nurse and a dentist and recieve annual checkups and dental referals. The Emploeyment Workshop Program is offered to those whowant to refresh their skills and find better employment, use our Cmoputer Drop-in Lab, and paticiapte in internview rehearsal clinics. The Employment Workshop Program is avaialble to new imigrants and their family members."
+# description = "About Oak Trees and Acorns. A Fun and Enriched Experience. At Oak Trees and Acorns we believe in providing children with a supportive environment which emphasizes quality of life, encourages growth, and recognizes the importance of family and of generations coming together. We believe in order for children to learn, they must first feel good about themselves and feel confident in their capabilities. We strive to provide a variety of experiences that are age appropriate to a child's learning style and developmental needs. Children enrolled at our Sherbrooke (long term care home) location will become an integral part of daily life at Sherbrooke. We believe that intergenerational interaction between children and residents strengthens the whole community, helps encourage the child's self worth through an extended family concept, and improves the quality of life for all. Children enrolled at our Caroline Robins location will become an integral part of the community school environment. We believe that early exposure to the school community, its activities and resources, create more seamless transitions to Pre Kindergarten and Kindergarten education, while helping to create important social bonds within the community. Children at this location will also have the same opportunity for intergenerational interactions with Central Haven, Sherbrooke's sister site, although on a less frequent spontaneous schedule. Children enrolled in both locations will be enriched with our inclusive programming using the Play and Exploration curriculum. We are licensed through the Ministry of Education, Early Years Branch and regulated by The Child Care Act, and The Saskatchewan Child Care Regulations. www.education.gov.sk.ca/elcc. Are you ready to start your future with us?"
 # description = "At Oak Trees and Acorns we believe in providing children with a supportive environment which emphasizes quality of life, encourages growth, and recognizes the importance of family and of generations coming together. We believe in order for children to learn, they must first feel good about themselves and feel confident in their capabilities. We strive to provide a variety of experiences that are age appropriate to a child's learning style and developmental needs. Children enrolled at our Sherbrooke (long term care home) location will become an integral part of daily life at Sherbrooke. We believe that intergenerational interaction between children and residents strengthens the whole community, helps encourage the child's self worth through an extended family concept, and improves the quality of life for all. Children enrolled at our Caroline Robins location will become an integral part of the community school environment."
-
+# description = "St.Mary's Church provides hot meals."
 
 def reset():
     with smile:
@@ -44,7 +45,7 @@ def dfs():
         hypothesis = Query.find_generate(content=description, trace_id=trace.id)
         hypothesis.save()
         schedule = Schedule(trace=trace)
-        schedule.cycle=0
+        # schedule.cycle=0
         res = schedule.subschedule_run(hypothesis=hypothesis, search='dfs', trigger_event=f"Received new {type(hypothesis)}")
         return trace
 
@@ -116,13 +117,13 @@ def improve_bfs(hypothesis, trigger_event):
 def process0_bfs(hypothesis, trigger_event):
     trace = Trace.get(hypothesis.trace)
     schedule = Schedule(trace=trace)
-    schedule.incr_cycle()
+    # schedule.incr_cycle()
     _ = schedule.subschedule_process0(search='bfs', hypothesis=hypothesis, trigger_event=trigger_event)
     return schedule
 def process1_bfs(hypothesis, trigger_event):
     trace = Trace.get(hypothesis.trace)
     schedule = Schedule(trace=trace)
-    schedule.incr_cycle()
+    # schedule.incr_cycle()
     _ = schedule.subschedule_process1(search='bfs', hypothesis=hypothesis, trigger_event=trigger_event)
     return schedule
 
@@ -159,6 +160,7 @@ def main_top_global_bfs(top_hypothesis, trigger_event):
             tmp_top_hypothesis = improve_bfs_loop(top_hypothesis=top_hypothesis, trigger_event=trigger_event)
             if new_top_hypothesis is not None and tmp_top_hypothesis is not None and tmp_top_hypothesis.id == new_top_hypothesis.id and round(top_hypothesis.certainty,3) == prev_top_certainty:
                 trigger_event = "Top hypothesis cannot be improved. Finding new global top hypothesis that can be processed."
+                Schedule.incr_cycle()
                 top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='find global higher Hypothesis 1',trace_id=trace.id, subclass=True)
                 if top_hypothesis is None or len(possible_kss) == 0:
                     trigger_event = "No Hypotheses to processes"
@@ -181,6 +183,7 @@ def main_top_global_bfs(top_hypothesis, trigger_event):
                     new_top_hypothesis = ranked_outputs[0]
                 else:
                     trigger_event = "No new hypotheses found. Finding new global top hypothesis that can be processed."
+                    Schedule.incr_cycle()
                     top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='find global higher Hypothesis 2', trace_id=trace.id, subclass=True)
                     if top_hypothesis is None or len(possible_kss) == 0:
                         trigger_event = "No Hypotheses to processes"
@@ -218,10 +221,12 @@ def main_top_global_bfs_init():
         hypothesis.save()
         trigger_event='Got new query; improving new hypothesis'
         main_top_global_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
+        Schedule.init_cycle()
         top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
         while top_hypothesis is not None:
             trigger_event = 'Restarted search and found new global highest Hypothesis'
             main_top_global_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
+            Schedule.incr_cycle()
             top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
 
         show_trace(trace.inst_id)
@@ -261,7 +266,7 @@ def main_top_local_bfs(top_hypothesis, trigger_event):
             if new_top_hypothesis is not None and tmp_top_hypothesis is not None and tmp_top_hypothesis.id == new_top_hypothesis.id and round(top_hypothesis.certainty,3) == prev_top_certainty:
                 trigger_event = "Top hypothesis cannot be improved. Finding new global top hypothesis that can be processed."
                 ranked_outputs = sorted(schedule.collect_outputs(), key=lambda x: round(x.certainty,3), reverse=True)
-
+                Schedule.incr_cycle()
                 top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='find global higher Hypothesis 1',trace_id=trace.id, subclass=True)
                 if top_hypothesis is None or len(possible_kss) == 0:
                     trigger_event = "No Hypotheses to processes"
@@ -284,6 +289,7 @@ def main_top_local_bfs(top_hypothesis, trigger_event):
                     new_top_hypothesis = ranked_outputs[0]
                 else:
                     trigger_event = "No new hypotheses found. Finding new global top hypothesis that can be processed."
+                    Schedule.incr_cycle()
                     top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='find global higher Hypothesis 2', trace_id=trace.id, subclass=True)
                     if top_hypothesis is None or len(possible_kss) == 0:
                         trigger_event = "No Hypotheses to processes"
@@ -317,10 +323,12 @@ def main_top_local_bfs_init():
         hypothesis = Query.find_generate(content=description, trace_id=trace.id)
         hypothesis.save()
         trigger_event='Got new query; improving new hypothesis'
+        Schedule.init_cycle()
         main_top_local_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
         top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
         while top_hypothesis is not None:
             trigger_event = 'Restarted search and found new global highest Hypothesis'
+            Schedule.incr_cycle()
             main_top_global_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
             top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
 
@@ -334,12 +342,14 @@ def main_top_local_init():
         hypothesis.save()
         trigger_event='Got new query; improving new hypothesis'
         # main_top_local_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
+        Schedule.incr_cycle()
         top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
         while top_hypothesis is not None:
             trigger_event = 'Restarted search and found new global highest Hypothesis'
             schedule = process0_bfs(top_hypothesis, trigger_event=trigger_event)
             # ranked_outputs = sorted(schedule.collect_outputs(), key=lambda x: round(x.certainty,3), reverse=True)
             main_top_global_bfs(top_hypothesis=hypothesis, trigger_event=trigger_event)
+            Schedule.incr_cycle()
             top_hypothesis, possible_kss = Schedule.get_highest_ranked_global_hypo(label='Find new global highest Hypothesis', trace_id=trace.id, subclass=True)
 
             show_trace(trace.inst_id)
@@ -347,14 +357,10 @@ def main_top_local_init():
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     main_top_global_bfs_init()
     # pass
     # main_top_local_bfs_init()
     # main_top_local_init()
     # trace = dfs()
     # show_trace(trace.inst_id)
-=======
-    main_top_local_bfs_init()
->>>>>>> 552c7b87f4c9905421194eb16e5f0bdc7e8c8a15
     

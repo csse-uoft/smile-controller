@@ -20,6 +20,7 @@ with smile:
     # from smile_base.Model.data_level.CatchmentArea"         : 'catchment_area',
     from smile_base.Model.data_level.query import Query
     from smile_base.Model.data_level.phrase import Phrase
+    from smile_base.Model.data_level.org_certainty import OrgCertainty
     from smile_base.Model.data_level.text import Text
     from smile_base.Model.data_level.sentence import Sentence
     from smile_base.Model.data_level.hypothesis import Hypothesis
